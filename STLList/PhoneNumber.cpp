@@ -19,45 +19,55 @@ PhoneNumber::~PhoneNumber()
 void PhoneNumber::add_phone_number(string mobileNumber, string numberOperator)
 {
 	NumberInfo  number(mobileNumber, numberOperator);
-	if (numberList.LengthIs() == 15)
+	if (numberList.size() == 15)
 	{
 		cout << "Already have 15 numbers!" << endl;
 	}
 	else
 	{
-		numberList.InsertItem(number);
+		numberList.push_back(number);
 	}
 }
 
 void PhoneNumber::remove_phone_number(string mobileNumber)
 {
 	NumberInfo  number(mobileNumber, "");
-	if (numberList.LengthIs() == 1)
+	if (numberList.size() == 1)
 	{
-		numberList.MakeEmpty();
+		numberList.clear();
 	}
 	else
 	{
-		numberList.DeleteItem(mobileNumber);
+		for (auto it = numberList.begin();it != numberList.end();it++)
+		{
+			if (it->get_mobile_number().compare(mobileNumber)==0)
+			{
+				it = numberList.erase(it);
+			}
+		}
 	}
 }
 
 bool PhoneNumber::search_mobile_number(string mobileNumber)
 {
-	return numberList.search(mobileNumber);
+	for (auto it = numberList.begin();it != numberList.end();it++)
+	{
+		if (it->get_mobile_number().compare(mobileNumber) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 bool PhoneNumber::change_operator(string mobileNumber, string newOperator)
 {
-	NumberInfo *temp;
-	int length = numberList.LengthIs();
-	numberList.ResetList();
-	while (length--)
+
+	for (auto it = numberList.begin();it != numberList.end();it++)
 	{
-			temp = numberList.GetNextItem();
-			if (temp->get_mobile_number().compare(mobileNumber) == 0)
+			if (it->get_mobile_number().compare(mobileNumber) == 0)
 			{
-				temp->set_number_operator(newOperator);
+				it->set_number_operator(newOperator);
 				return true;
 			}
 	}
@@ -67,12 +77,15 @@ bool PhoneNumber::change_operator(string mobileNumber, string newOperator)
 
 int PhoneNumber::get_length()
 {
-	return numberList.LengthIs();
+	return numberList.size();
 }
 
 void PhoneNumber::print()
 {
-	numberList.print();
+	for (auto it = numberList.begin();it != numberList.end();it++)
+	{
+		it->print();
+	}
 	cout << endl;
 }
 

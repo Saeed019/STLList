@@ -18,18 +18,24 @@ CustomerList::~CustomerList()
 {
 }
 
+bool CustomerList::search_nid(string nid)
+{
+	for (auto it = customerList.begin();it != customerList.end();it++)
+	{
+		if (it->get_national_id().compare(nid) == 0)
+			return true;
+    }
+	return false;
+}
+
 bool CustomerList::search_mobile(string mobileNumber)
 {
-	CustomerData *temp;
 	bool found = false;
-	int length = customerList.LengthIs();
-	customerList.ResetList();
-	while (length--)
+	for (auto it = customerList.begin();it != customerList.end();it++)
 	{
-		temp = customerList.GetNextItem();
-		found = temp->check_mobile(mobileNumber);
-		if(found)
-		break;
+		found = it->check_mobile(mobileNumber);
+		if (found)
+			break;
 	}
 	return found;
 }
@@ -47,7 +53,7 @@ void CustomerList::insert_customer(string name, string fatherName, string mother
 		weight, eyeColor, hairColor, mobileNumber, numberOperator);
 	if (check_nid(nationalId))
 	{
-		if (customerList.search(nationalId))
+		if (search_nid(nationalId))
 		{
 			cout << "This National Id is Already Resistered." << endl;
 		}
@@ -55,7 +61,7 @@ void CustomerList::insert_customer(string name, string fatherName, string mother
 		{
 			if (!search_mobile(mobileNumber))
 			{
-				customerList.InsertItem(customer);
+				customerList.push_back(customer);
 			}
 			else
 				cout << "This Mobile Number is already Resistered." << endl;
@@ -69,19 +75,16 @@ void CustomerList::insert_customer(string name, string fatherName, string mother
 
 void CustomerList::insert_mobile_number(string nationalId, string mobileNumber,string numberOperator)
 {
-	CustomerData *temp;
 	bool found = false;
-	int length = customerList.LengthIs();
-	customerList.ResetList();
 	if (check_nid(nationalId))
 	{
 		if (!(search_mobile(mobileNumber)))
 		{
-			customerList.ResetList();
-			while (length--)
+			for (auto it = customerList.begin();it != customerList.end();it++)
 			{
-				temp = customerList.GetNextItem();
-				found = temp->insert_phone(nationalId, mobileNumber, numberOperator);
+				found = it->insert_phone(nationalId, mobileNumber, numberOperator);
+				if (found)
+					break;
 			}
 			if (!found)
 			{
@@ -100,30 +103,33 @@ void CustomerList::insert_mobile_number(string nationalId, string mobileNumber,s
 
 void CustomerList::delete_customer(string nId)
 {
-	customerList.DeleteItem(nId);
+	for (auto it = customerList.begin();it != customerList.end();it++)
+	{
+		if (it->get_national_id().compare(nId) == 0)
+		{
+			it = customerList.erase(it);
+			break;
+		}
+	}
+
+
 }
 
 void CustomerList::remove_mobile_number(string mobileNumber)
 {
-	CustomerData *temp;
 	bool found = false;
-	int length = customerList.LengthIs();
-	customerList.ResetList();
 		if (search_mobile(mobileNumber))
 		{
-			customerList.ResetList();
-			while (length--)
+			for (auto it = customerList.begin();it != customerList.end();it++)
 			{
-				temp = customerList.GetNextItem();
-				if (temp->check_mobile(mobileNumber))
+				if (it->check_mobile(mobileNumber))
 				{
-					if (temp->count_number() == 1)
+					if (it->count_number() == 1)
 					{
-						string nId = temp->get_national_id();
-						customerList.DeleteItem(nId);
+						delete_customer(it->get_national_id());
 					}
 					else
-						temp->delete_phone(mobileNumber);
+						it->delete_phone(mobileNumber);
 					found = true;
 				}
 				if (found)
@@ -140,18 +146,12 @@ void CustomerList::remove_mobile_number(string mobileNumber)
 
 void CustomerList::change_operator(string mobileNumber, string newOperator)
 {
-	CustomerData *temp;
 	bool found = false;
-	int length = customerList.LengthIs();
-	customerList.ResetList();
 	if (search_mobile(mobileNumber))
 	{
-		customerList.ResetList();
-		while (length--)
+		for (auto it = customerList.begin();it != customerList.end();it++)
 		{
-
-			temp = customerList.GetNextItem();
-			found = temp->change_operator(mobileNumber, newOperator);
+			found = it->change_operator(mobileNumber, newOperator);
 			if (found)
 				break;
 		}
@@ -167,5 +167,8 @@ void CustomerList::change_operator(string mobileNumber, string newOperator)
 void CustomerList::print()
 {
 	cout << "List Content-> "<<std::endl;
-	customerList.print();
+	for (auto it = customerList.begin();it != customerList.end();it++)
+	{
+		it->print();
+	}
 }

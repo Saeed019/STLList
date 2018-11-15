@@ -48,7 +48,6 @@ bool CustomerData::insert_phone(string nId,string mobileNumber, string numberOpe
 	{
 		numberList.add_phone_number(mobileNumber, numberOperator);
 		return true;
-
 	}
 	else
 	{
